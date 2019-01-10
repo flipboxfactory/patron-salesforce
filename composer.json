@@ -12,7 +12,6 @@
     "yii2"
   ],
   "require": {
-    "craftcms/cms": "^3.0.14",
     "stevenmaguire/oauth2-salesforce": "^2.0",
     "flipboxfactory/patron": "^2.0",
     "flipboxfactory/craft-salesforce": "^1.0"
@@ -46,6 +45,6 @@
     "developer": "Flipbox Digital",
     "developerUrl": "https://www.flipboxdigital.com",
     "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/patron-salesforce/master/CHANGELOG.md",
-    "downloadUrl": "https://github.com/flipboxfactory/patron-salesforce/archive/master.zip"
+    "documentationUrl": "https://github.com/flipboxfactory/patron-salesforce/blob/master/README.md"
   }
 }
