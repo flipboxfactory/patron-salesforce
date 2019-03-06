@@ -6,8 +6,8 @@
     id: 'version',
     class: 'code',
     name: 'version',
-    value: connection.settings.version ?? null,
-    errors: connection.getErrors('settings.version') ?? [],
+    value: connection.version ?? null,
+    errors: connection.getErrors('version') ?? [],
     required: true
 }) }}
 
@@ -25,6 +25,6 @@
     id: 'provider',
     name: 'provider',
     options: providerOptions,
-    value: connection.settings.provider ?? null,
-    errors: connection.getErrors('settings.provider') ?? []
+    value: connection.provider ?? null,
+    errors: connection.getErrors('provider') ?? []
 }) }}

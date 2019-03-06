@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/patron-salesforce",
   "description": "A Salesforce OAuth2 provider for Patron and Craft CMS",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "craft-plugin",
   "license": "MIT",
   "keywords": [
@@ -45,6 +45,7 @@
     "developer": "Flipbox Digital",
     "developerUrl": "https://www.flipboxdigital.com",
     "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/patron-salesforce/master/CHANGELOG.md",
-    "documentationUrl": "https://github.com/flipboxfactory/patron-salesforce/blob/master/README.md"
+    "documentationUrl": "https://github.com/flipboxfactory/patron-salesforce/blob/master/README.md",
+    "schemaVersion": "1.1.0"
   }
 }

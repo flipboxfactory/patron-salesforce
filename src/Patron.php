@@ -16,7 +16,7 @@ use flipbox\patron\cp\Cp as PatronCp;
 use flipbox\patron\events\RegisterProviderIcons;
 use flipbox\patron\events\RegisterProviders;
 use flipbox\patron\events\RegisterProviderSettings;
-use flipbox\patron\salesforce\records\PatronConnection;
+use flipbox\patron\salesforce\connections\PatronConnection;
 use flipbox\patron\salesforce\settings\SalesforceSettings;
 use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
 use yii\base\Event;

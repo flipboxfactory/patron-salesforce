@@ -6,7 +6,7 @@
  * @link       https://github.com/flipboxfactory/patron-salesforce/
  */
 
-namespace flipbox\patron\salesforce\records;
+namespace flipbox\patron\salesforce\connections;
 
 use flipbox\patron\Patron;
 use League\OAuth2\Client\Token\AccessTokenInterface;

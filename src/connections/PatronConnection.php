@@ -6,32 +6,41 @@
  * @link       https://github.com/flipboxfactory/patron-salesforce
  */
 
-namespace flipbox\patron\salesforce\records;
+namespace flipbox\patron\salesforce\connections;
 
 use Craft;
 use craft\helpers\ArrayHelper;
+use flipbox\craft\integration\connections\AbstractSaveableConnection;
+use flipbox\craft\salesforce\connections\SavableConnectionInterface;
 use flipbox\craft\salesforce\Force;
-use flipbox\craft\salesforce\records\Connection;
 use flipbox\patron\queries\ProviderQuery;
 use flipbox\patron\records\Provider;
-use Flipbox\Salesforce\Connections\ConnectionInterface;
 use Psr\Http\Message\RequestInterface;
 use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
-use yii\validators\RequiredValidator;
 use Zend\Diactoros\Uri;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
  * @since 1.0.0
  */
-class PatronConnection extends Connection implements ConnectionInterface
+class PatronConnection extends AbstractSaveableConnection implements SavableConnectionInterface
 {
     use AccessTokenAuthorizationTrait;
 
     /**
+     * @var string
+     */
+    public $version;
+
+    /**
+     * @var string|int
+     */
+    public $provider;
+
+    /**
      * @var Provider
      */
-    private $provider;
+    private $record;
 
     /**
      * @inheritdoc
@@ -51,44 +60,33 @@ class PatronConnection extends Connection implements ConnectionInterface
             [
                 [
                     [
-                        'settings'
+                        'version',
+                        'provider'
                     ],
-                    'validateSettings',
-                    'skipOnError' => false
+                    'required'
+                ],
+                [
+                    [
+                        'version',
+                        'provider'
+                    ],
+                    'safe',
+                    'on' => [
+                        static::SCENARIO_DEFAULT
+                    ]
                 ]
             ]
         );
     }
 
     /**
-     * @param $attribute
-     */
-    public function validateSettings($attribute)
-    {
-        $settings = $this->{$attribute};
-
-        $validator = new RequiredValidator();
-
-        $requiredSettings = ['version', 'provider'];
-        foreach ($requiredSettings as $requiredSetting) {
-            $error = null;
-            if (false === ($validator->validate(($settings[$requiredSetting] ?? null), $error))) {
-                $this->addError('settings.' . $requiredSetting, $error);
-            }
-        }
-    }
-
-    /**
-     * @param bool $insert
-     * @param array $changedAttributes
+     * @inheritdoc
      * @throws \Throwable
      */
-    public function afterSave($insert, $changedAttributes)
+    public function afterSave(bool $isNew, array $changedAttributes)
     {
-        parent::afterSave($insert, $changedAttributes);
-
         // Delete existing lock
-        if (null !== ($provider = ArrayHelper::getValue($changedAttributes, 'settings.provider'))) {
+        if (null !== ($provider = ArrayHelper::getValue($changedAttributes, 'provider'))) {
             $condition = [
                 (is_numeric($provider) ? 'id' : 'handle') => $provider,
                 'environment' => null,
@@ -100,7 +98,9 @@ class PatronConnection extends Connection implements ConnectionInterface
             }
         }
 
-        $this->getPatronProvider(false)->addLock(Force::getInstance());
+        $this->getRecord(false)->addLock(Force::getInstance());
+
+        parent::afterSave($isNew, $changedAttributes);
     }
 
     /**
@@ -109,7 +109,7 @@ class PatronConnection extends Connection implements ConnectionInterface
      */
     public function getResourceUrl(): string
     {
-        $version = $this->getSettingsValue('version');
+        $version = $this->version;
 
         return $this->getInstanceUrl() .
             '/services/data' .
@@ -132,7 +132,7 @@ class PatronConnection extends Connection implements ConnectionInterface
         return Craft::$app->view->renderTemplate(
             'patron-salesforce/connections/configuration',
             [
-                'provider' => $this->getPatronProvider(false),
+                'provider' => $this->getRecord(false),
                 'connection' => $this,
                 'providers' => $providers->all()
             ]
@@ -143,12 +143,10 @@ class PatronConnection extends Connection implements ConnectionInterface
      * @param bool $restricted
      * @return Provider
      */
-    protected function getPatronProvider(bool $restricted = true): Provider
+    protected function getRecord(bool $restricted = true): Provider
     {
-        $settings = $this->settings;
-
         // Get provider from settings
-        if (null !== ($provider = $settings['provider'] ?? null)) {
+        if (null !== ($provider = $this->provider ?? null)) {
             $condition = [
                 (is_numeric($provider) ? 'id' : 'handle') => $provider
             ];
@@ -174,13 +172,12 @@ class PatronConnection extends Connection implements ConnectionInterface
      * @return Salesforce
      * @throws \yii\base\InvalidConfigException
      */
-    public function getProvider(): Salesforce
+    protected function getProvider(): Salesforce
     {
-        if ($this->provider === null) {
-            $settings = $this->settings;
+        if ($this->record === null) {
 
             // Get provider from settings
-            if (null !== ($provider = $settings['provider'] ?? null)) {
+            if (null !== ($provider = $this->provider ?? null)) {
                 $condition = [
                     (is_numeric($provider) ? 'id' : 'handle') => $provider
                 ];
@@ -191,10 +188,10 @@ class PatronConnection extends Connection implements ConnectionInterface
                 $provider = new Salesforce();
             }
 
-            $this->provider = $provider;
+            $this->record = $provider;
         }
 
-        return $this->provider;
+        return $this->record;
     }
 
     /**
