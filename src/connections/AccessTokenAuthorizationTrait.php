@@ -26,6 +26,7 @@ trait AccessTokenAuthorizationTrait
     /**
      * @param RequestInterface $request
      * @return RequestInterface
+     * @throws \yii\base\InvalidConfigException
      */
     public function prepareAuthorizationRequest(
         RequestInterface $request
@@ -34,10 +35,9 @@ trait AccessTokenAuthorizationTrait
     }
 
     /**
-     * Add an Authorization Bearer header to the request
-     *
      * @param RequestInterface $request
      * @return RequestInterface
+     * @throws \yii\base\InvalidConfigException
      */
     protected function addAuthorizationHeader(RequestInterface $request): RequestInterface
     {
@@ -54,6 +54,7 @@ trait AccessTokenAuthorizationTrait
      * @return ResponseInterface
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \flipbox\craft\ember\exceptions\RecordNotFoundException
+     * @throws \yii\base\InvalidConfigException
      */
     public function handleAuthorizationResponse(
         ResponseInterface $response,
@@ -96,6 +97,7 @@ trait AccessTokenAuthorizationTrait
      * @return mixed
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \flipbox\craft\ember\exceptions\RecordNotFoundException
+     * @throws \yii\base\InvalidConfigException
      */
     protected function refreshAndRetry(RequestInterface $request, ResponseInterface $response, callable $next = null)
     {

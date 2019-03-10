@@ -13,7 +13,6 @@ use craft\helpers\ArrayHelper;
 use flipbox\craft\integration\connections\AbstractSaveableConnection;
 use flipbox\craft\salesforce\connections\SavableConnectionInterface;
 use flipbox\craft\salesforce\Force;
-use flipbox\patron\queries\ProviderQuery;
 use flipbox\patron\records\Provider;
 use Psr\Http\Message\RequestInterface;
 use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
@@ -36,11 +35,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
      * @var string|int
      */
     public $provider;
-
-    /**
-     * @var Provider
-     */
-    private $record;
 
     /**
      * @inheritdoc
@@ -132,7 +126,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
         return Craft::$app->view->renderTemplate(
             'patron-salesforce/connections/configuration',
             [
-                'provider' => $this->getRecord(false),
                 'connection' => $this,
                 'providers' => $providers->all()
             ]
@@ -166,32 +159,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
         $provider->class = Salesforce::class;
 
         return $provider;
-    }
-
-    /**
-     * @return Salesforce
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function getProvider(): Salesforce
-    {
-        if ($this->record === null) {
-
-            // Get provider from settings
-            if (null !== ($provider = $this->provider ?? null)) {
-                $condition = [
-                    (is_numeric($provider) ? 'id' : 'handle') => $provider
-                ];
-                $provider = (new ProviderQuery($condition))->one();
-            }
-
-            if (!$provider instanceof Salesforce) {
-                $provider = new Salesforce();
-            }
-
-            $this->record = $provider;
-        }
-
-        return $this->record;
     }
 
     /**

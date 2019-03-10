@@ -10,7 +10,6 @@ namespace flipbox\patron\salesforce\connections;
 
 use flipbox\patron\Patron;
 use League\OAuth2\Client\Token\AccessTokenInterface;
-use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -18,15 +17,12 @@ use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
  */
 trait AccessTokenTrait
 {
+    use ProviderTrait;
+
     /**
      * @var AccessTokenInterface|null
      */
     private $accessToken;
-
-    /**
-     * @return Salesforce
-     */
-    abstract public function getProvider(): Salesforce;
 
     /**
      * @param AccessTokenInterface $accessToken
@@ -38,6 +34,7 @@ trait AccessTokenTrait
 
     /**
      * @return AccessTokenInterface
+     * @throws \yii\base\InvalidConfigException
      */
     public function getAccessToken(): AccessTokenInterface
     {
