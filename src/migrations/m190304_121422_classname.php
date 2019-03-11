@@ -33,7 +33,7 @@ class m190304_121422_classname extends Migration
             $record->class = PatronConnection::class;
 
             // Save
-            if (!$record->save()) {
+            if (!$record->save(true, ['class'])) {
                 $success = false;
             }
         }
