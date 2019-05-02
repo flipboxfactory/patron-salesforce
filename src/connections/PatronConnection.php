@@ -83,7 +83,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
         if (null !== ($provider = ArrayHelper::getValue($changedAttributes, 'provider'))) {
             $condition = [
                 (is_numeric($provider) ? 'id' : 'handle') => $provider,
-                'environment' => null,
                 'enabled' => null
             ];
 
@@ -120,7 +119,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
     {
         $providers = Provider::find()
             ->class(Salesforce::class)
-            ->environment(null)
             ->enabled(null);
 
         return Craft::$app->view->renderTemplate(
@@ -145,7 +143,6 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
             ];
 
             if ($restricted !== true) {
-                $condition['environment'] = null;
                 $condition['enabled'] = null;
             }
 
