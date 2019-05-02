@@ -13,7 +13,7 @@ use flipbox\craft\ember\modules\LoggerTrait;
 use flipbox\craft\salesforce\cp\Cp as ForceCp;
 use flipbox\craft\salesforce\events\RegisterConnectionsEvent;
 use flipbox\patron\cp\Cp as PatronCp;
-use flipbox\patron\events\RegisterProviderIcons;
+use flipbox\patron\events\RegisterProviderInfo;
 use flipbox\patron\events\RegisterProviders;
 use flipbox\patron\events\RegisterProviderSettings;
 use flipbox\patron\salesforce\connections\PatronConnection;
@@ -49,12 +49,12 @@ class Patron extends Plugin
             PatronCp::class,
             RegisterProviders::REGISTER_PROVIDERS,
             function (RegisterProviders $event) {
-                $event->providers[] = Salesforce::class;
+                $event->providers[] = Salesforce::class; //
             }
         );
 
         // OAuth2 Provider Settings
-        RegisterProviderSettings::on(
+        Event::on(
             Salesforce::class,
             RegisterProviderSettings::REGISTER_SETTINGS,
             function (RegisterProviderSettings $event) {
@@ -65,9 +65,12 @@ class Patron extends Plugin
         // OAuth2 Provider Icon
         Event::on(
             PatronCp::class,
-            RegisterProviderIcons::REGISTER_ICON,
-            function (RegisterProviderIcons $event) {
-                $event->icons[Salesforce::class] = '@vendor/flipboxfactory/patron-salesforce/icons/salesforce.svg';
+            RegisterProviderInfo::REGISTER_INFO,
+            function (RegisterProviderInfo $event) {
+                $event->info[Salesforce::class] = [
+                    'name' => 'Salesforce',
+                    'icon' => '@vendor/flipboxfactory/patron-salesforce/icons/salesforce.svg'
+                ];
             }
         );
 
