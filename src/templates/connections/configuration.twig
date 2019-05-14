@@ -13,8 +13,9 @@
 
 {% set providerOptions = {'': '-- Select Patron Provider --'} %}
 {% for provider in providers %}
+    {% set label = provider.info.name ?? null %}
     {% set providerOptions = providerOptions|merge([{
-        label: provider.handle,
+        label: label ? label ~ ' (' ~provider.handle~ ')' : provider.handle,
         value: provider.id
     }]) %}
 {% endfor %}
