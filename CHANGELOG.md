@@ -5,5 +5,8 @@ Changelog
 ### Added
 - Craft 4.0 support
 
+### Changed
+- Connection class namespace changed
+
 ## 1.0.0 - 2019-01-10
 - Initial release.
