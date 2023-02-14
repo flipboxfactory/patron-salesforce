@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 2.0.0 - 2023-02-06
+### Added
+- Craft 4.0 support
+
+### Changed
+- Connection class namespace changed
+
 ## 1.2.1 - 2019-05-13
 ### Changed
 - Dropdowns will use the 'provider.info.name' override (if applicable)
