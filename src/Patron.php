@@ -18,7 +18,7 @@ use flipbox\patron\events\RegisterProviders;
 use flipbox\patron\events\RegisterProviderSettings;
 use flipbox\patron\salesforce\connections\PatronConnection;
 use flipbox\patron\salesforce\settings\SalesforceSettings;
-use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
+use Flipbox\OAuth2\Client\Provider\Salesforce;
 use yii\base\Event;
 
 /**
@@ -74,7 +74,7 @@ class Patron extends Plugin
             }
         );
 
-        // OAuth2 Provider Icon
+        // OAuth2 Provider Connection
         Event::on(
             ForceCp::class,
             RegisterConnectionsEvent::REGISTER_CONNECTIONS,

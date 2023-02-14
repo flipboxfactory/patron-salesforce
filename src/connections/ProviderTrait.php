@@ -3,13 +3,13 @@
 /**
  * @copyright  Copyright (c) Flipbox Digital Limited
  * @license    https://github.com/flipboxfactory/patron-salesforce/blob/master/LICENSE
- * @link       https://github.com/flipboxfactory/patron-salesforce
+ * @link       https://github.com/flipboxfactory/patron-salesforce/
  */
 
 namespace flipbox\patron\salesforce\connections;
 
+use Flipbox\OAuth2\Client\Provider\Salesforce;
 use flipbox\patron\queries\ProviderQuery;
-use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -33,7 +33,7 @@ trait ProviderTrait
     }
 
     /**
-     * @return Salesforce
+     * @return salesforce
      * @throws \yii\base\InvalidConfigException
      */
     public function getProvider(): Salesforce

@@ -1,10 +1,11 @@
 {% import "_includes/forms" as forms %}
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: "Domain"|t('patron-salesforce'),
     instructions: "The Salesforce instance URL."|t('patron-salesforce'),
     id: 'domain',
     name: 'domain',
     value: settings.domain,
     errors: settings.getErrors('domain'),
-    required: true
+    required: true,
+    suggestEnvVars: true
 }) }}

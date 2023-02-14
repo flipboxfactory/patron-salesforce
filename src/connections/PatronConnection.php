@@ -10,13 +10,14 @@ namespace flipbox\patron\salesforce\connections;
 
 use Craft;
 use craft\helpers\ArrayHelper;
-use flipbox\craft\integration\connections\AbstractSaveableConnection;
 use flipbox\craft\salesforce\connections\SavableConnectionInterface;
-use flipbox\craft\salesforce\Force;
+use flipbox\craft\salesforce\Force as salesforcePlugin;
+use flipbox\craft\integration\connections\AbstractSaveableConnection;
+use Flipbox\OAuth2\Client\Provider\Salesforce;
+use Flipbox\OAuth2\Client\Provider\SalesforceResourceOwner;
 use flipbox\patron\records\Provider;
 use Psr\Http\Message\RequestInterface;
-use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
-use Zend\Diactoros\Uri;
+use Laminas\Diactoros\Uri;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -24,17 +25,12 @@ use Zend\Diactoros\Uri;
  */
 class PatronConnection extends AbstractSaveableConnection implements SavableConnectionInterface
 {
-    use AccessTokenAuthorizationTrait;
+    use AccessTokenAuthorizationTrait, ProviderTrait;
 
     /**
      * @var string
      */
     public $version;
-
-    /**
-     * @var string|int
-     */
-    public $provider;
 
     /**
      * @inheritdoc
@@ -77,7 +73,7 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
      * @inheritdoc
      * @throws \Throwable
      */
-    public function afterSave(bool $isNew, array $changedAttributes)
+    public function afterSave(bool $isNew, array $changedAttributes = [])
     {
         // Delete existing lock
         if (null !== ($provider = ArrayHelper::getValue($changedAttributes, 'provider'))) {
@@ -87,26 +83,13 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
             ];
 
             if (null !== ($provider = Provider::findOne($condition))) {
-                $provider->removeLock(Force::getInstance());
+                $provider->removeLock(salesforcePlugin::getInstance());
             }
         }
 
-        $this->getRecord(false)->addLock(Force::getInstance());
+        $this->getRecord(false)->addLock(salesforcePlugin::getInstance());
 
         parent::afterSave($isNew, $changedAttributes);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getResourceUrl(): string
-    {
-        $version = $this->version;
-
-        return $this->getInstanceUrl() .
-            '/services/data' .
-            (!empty($version) ? ('/' . $version) : '');
     }
 
     /**
@@ -128,6 +111,46 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
                 'providers' => $providers->all()
             ]
         );
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getInstanceUrl(): string
+    {
+        return rtrim($this->getProvider()->getDomain(), '/');
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return RequestInterface
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function prepareInstanceRequest(RequestInterface $request): RequestInterface
+    {
+        $request = $request->withUri(
+            new Uri($this->getResourceUrl())
+        );
+
+        foreach ($this->getProvider()->getHeaders() as $key => $value) {
+            $request = $request->withAddedHeader($key, $value);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getResourceUrl(): string
+    {
+        $version = $this->version;
+
+        return $this->getInstanceUrl() .
+            '/services/data' .
+            (!empty($version) ? ('/' . $version) : '');
     }
 
     /**
@@ -156,32 +179,5 @@ class PatronConnection extends AbstractSaveableConnection implements SavableConn
         $provider->class = Salesforce::class;
 
         return $provider;
-    }
-
-    /**
-     * @inheritdoc
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getInstanceUrl(): string
-    {
-        return rtrim($this->getProvider()->getDomain(), '/');
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return RequestInterface
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function prepareInstanceRequest(RequestInterface $request): RequestInterface
-    {
-        $request = $request->withUri(
-            new Uri($this->getResourceUrl())
-        );
-
-        foreach ($this->getProvider()->getHeaders() as $key => $value) {
-            $request = $request->withAddedHeader($key, $value);
-        }
-
-        return $request;
     }
 }
