@@ -12,8 +12,8 @@
     "yii2"
   ],
   "require": {
-    "stevenmaguire/oauth2-salesforce": "^2.0",
-    "flipboxfactory/patron": "dev-feature/craft-4",
+    "flipboxdigital/oauth2-salesforce": "^1.0",
+    "flipboxfactory/patron": "^3.0",
     "flipboxfactory/craft-salesforce": "dev-feature/craft-4"
   },
   "require-dev": {

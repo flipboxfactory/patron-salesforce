@@ -6,9 +6,10 @@
  * @link       https://github.com/flipboxfactory/patron-salesforce/
  */
 
-namespace flipbox\patron\salesforce\records;
+namespace flipbox\patron\salesforce\connections;
 
 use flipbox\patron\Patron;
+use flipbox\patron\records\Provider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
 
@@ -18,6 +19,7 @@ use Stevenmaguire\OAuth2\Client\Provider\Salesforce;
  */
 trait AccessTokenTrait
 {
+
     /**
      * @var AccessTokenInterface|null
      */
@@ -26,7 +28,7 @@ trait AccessTokenTrait
     /**
      * @return Salesforce
      */
-    abstract public function getProvider(): Salesforce;
+    abstract protected function getRecord(bool $restricted = true): Provider;
 
     /**
      * @param AccessTokenInterface $accessToken
@@ -43,7 +45,7 @@ trait AccessTokenTrait
     {
         if (!$this->accessToken instanceof AccessTokenInterface) {
             $token = Patron::getInstance()->getTokens([
-                'provider' => $this->getProvider()
+                'provider' => $this->getRecord()->id
             ])->one();
 
             $this->accessToken = $token;

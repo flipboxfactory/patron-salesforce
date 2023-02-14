@@ -1,20 +1,10 @@
 {% import "_includes/forms" as forms %}
 
-{{ forms.textField({
-    label: "Version"|t('patron-salesforce'),
-    instructions: "The API version to use (ex: 'v41.0')"|t('patron-salesforce'),
-    id: 'version',
-    class: 'code',
-    name: 'version',
-    value: connection.settings.version ?? null,
-    errors: connection.getErrors('settings.version') ?? [],
-    required: true
-}) }}
-
 {% set providerOptions = {'': '-- Select Patron Provider --'} %}
 {% for provider in providers %}
+    {% set label = provider.info.name ?? null %}
     {% set providerOptions = providerOptions|merge([{
-        label: provider.handle,
+        label: label ? label ~ ' (' ~provider.handle~ ')' : provider.handle,
         value: provider.id
     }]) %}
 {% endfor %}
@@ -25,6 +15,21 @@
     id: 'provider',
     name: 'provider',
     options: providerOptions,
-    value: connection.settings.provider ?? null,
-    errors: connection.getErrors('settings.provider') ?? []
+    value: connection.provider ?? null,
+    errors: connection.getErrors('provider') ?? []
+}) }}
+
+<div style="border-radius: 2px; background: #fffcf5; color: #9a7a3b; border: 1px solid #fff3dc; padding:16px;">
+    <p>An OAuth connection to requires a Salesforce App.  <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_oauth_and_connected_apps.htm">Learn how to create an app in Salesforce</a></p>
+</div>
+
+{{ forms.textField({
+    label: "Version"|t('patron-salesforce'),
+    instructions: "The API version to use (ex: 'v41.0')"|t('patron-salesforce'),
+    id: 'version',
+    class: 'code',
+    name: 'version',
+    value: connection.version ?? null,
+    errors: connection.getErrors('version') ?? [],
+    required: true
 }) }}
