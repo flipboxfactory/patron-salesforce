@@ -14,7 +14,7 @@
   "require": {
     "flipboxdigital/oauth2-salesforce": "^1.0",
     "flipboxfactory/patron": "^3.0",
-    "flipboxfactory/craft-salesforce": "dev-feature/craft-4"
+    "flipboxfactory/craft-salesforce": "~2.0"
   },
   "require-dev": {
     "codeception/codeception": "^5.0",
